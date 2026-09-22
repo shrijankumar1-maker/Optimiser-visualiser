@@ -193,8 +193,8 @@
   .plot-card { padding: 12px; }
   .plot-head {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 10px;
     margin-bottom: 8px;
   }
   .plot-head h2 {
@@ -205,7 +205,7 @@
     color: var(--ink-soft);
     letter-spacing: 0.02em;
   }
-  .plot-head .hint { font-size: 11px; color: var(--ink-soft); }
+  .plot-head .hint { font-size: 11px; color: var(--ink-soft); margin-left: auto; }
   .canvas-holder {
     position: relative;
     width: 100%;
@@ -377,7 +377,8 @@
     <div class="card plot-card">
       <div class="plot-head">
         <h2>3D SURFACE</h2>
-        <span class="hint">drag to rotate · click a dot to inspect a step</span>
+        <span class="hint">drag to rotate freely · click a dot to inspect a step</span>
+        <button class="back-live" id="resetViewBtn">reset view</button>
       </div>
       <div class="canvas-holder"><canvas id="canvas3d"></canvas></div>
     </div>
@@ -1160,6 +1161,10 @@
     state.inspect = null;
     renderAll();
   });
+  document.getElementById('resetViewBtn').addEventListener('click', ()=>{
+    state.rot.az = 0.62; state.rot.el = 0.42;
+    render3D();
+  });
 
   // 3D drag-to-rotate
   let dragStart = null;
@@ -1170,7 +1175,7 @@
     const dx = e.clientX-dragStart.x, dy = e.clientY-dragStart.y;
     if (Math.abs(dx)+Math.abs(dy) > 3) state.dragging3moved = true;
     state.rot.az = dragStart.az + dx*0.006;
-    state.rot.el = Math.max(0.08, Math.min(1.5, dragStart.el - dy*0.006));
+    state.rot.el = dragStart.el - dy*0.006;
     render3D();
   });
   window.addEventListener('mouseup', ()=>{ dragStart=null; state.dragging=false; canvas3d.classList.remove('dragging'); });
@@ -1181,7 +1186,7 @@
     const dx=t.clientX-dragStart.x, dy=t.clientY-dragStart.y;
     if (Math.abs(dx)+Math.abs(dy) > 3) state.dragging3moved = true;
     state.rot.az = dragStart.az + dx*0.006;
-    state.rot.el = Math.max(0.08, Math.min(1.5, dragStart.el - dy*0.006));
+    state.rot.el = dragStart.el - dy*0.006;
     render3D();
   }, {passive:true});
   canvas3d.addEventListener('touchend', ()=>{ dragStart=null; });
